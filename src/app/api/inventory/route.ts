@@ -1,120 +1,124 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getAuthToken } from "@/lib/auth"
+import { NextRequest, NextResponse } from "next/server";
+import { getAuthToken } from "@/lib/auth";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
-
-if (!API_URL) {
-  console.warn("API_URL environment variable is not set")
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // GET /api/inventory
 export async function GET(req: NextRequest) {
+  if (!API_URL) {
+    console.error("[inventory] NEXT_PUBLIC_API_URL is not set");
+    return NextResponse.json(
+      { message: "Server configuration error" },
+      { status: 500 },
+    );
+  }
+
+  const token = getAuthToken(req);
+  console.log(
+    "[inventory GET] token:",
+    token ?? "null — check cookie name in DevTools",
+  );
+
   try {
-    const token = getAuthToken(req)
-
-    if (!API_URL) {
-      return NextResponse.json(
-        { message: "Server configuration error" },
-        { status: 500 }
-      )
-    }
-
     const res = await fetch(`${API_URL}/api/inventories`, {
       headers: {
-        Authorization: token ? `Bearer ${token}` : "",
+        ...(token && { Authorization: `Bearer ${token}` }),
         Accept: "application/json",
+        "Content-Type": "application/json",
       },
       cache: "no-store",
-    })
+    });
+
+    const text = await res.text();
+    console.log(`[inventory GET] backend ${res.status}:`, text.slice(0, 300));
 
     if (!res.ok) {
-      console.error(`Backend returned ${res.status} for GET /api/inventories`)
       return NextResponse.json(
-        { message: "Failed to fetch inventory from backend" },
-        { status: res.status }
-      )
+        { message: `Backend error: ${res.status}`, detail: text },
+        { status: res.status },
+      );
     }
 
-    const data = await res.json()
-    return NextResponse.json(data, { status: 200 })
-  } catch (error) {
-    console.error("Error fetching inventory:", error)
+    const data = JSON.parse(text);
+    return NextResponse.json(Array.isArray(data) ? data : [], { status: 200 });
+  } catch (err) {
+    console.error("[inventory GET] fetch failed:", err);
     return NextResponse.json(
-      { message: "Failed to fetch inventory" },
-      { status: 500 }
-    )
+      { message: "Could not reach backend", detail: String(err) },
+      { status: 502 },
+    );
   }
 }
 
 // POST /api/inventory
 export async function POST(req: NextRequest) {
+  if (!API_URL) {
+    console.error("[inventory] NEXT_PUBLIC_API_URL is not set");
+    return NextResponse.json(
+      { message: "Server configuration error" },
+      { status: 500 },
+    );
+  }
+
+  const token = getAuthToken(req);
+  console.log("[inventory POST] token:", token ?? "null");
+
+  let body: unknown;
   try {
-    const token = getAuthToken(req)
-    const body = await req.json()
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { message: "Invalid request body" },
+      { status: 400 },
+    );
+  }
 
-    if (!API_URL) {
-      console.error("NEXT_PUBLIC_API_URL is not configured")
-      return NextResponse.json(
-        { message: "Server not configured. Please set NEXT_PUBLIC_API_URL environment variable." },
-        { status: 500 }
-      )
-    }
+  const { item_name, quantity } = body as Record<string, unknown>;
 
-    // Basic validation
-    if (!body.item_name || body.item_name.trim() === "") {
-      return NextResponse.json(
-        { message: "Item name is required" },
-        { status: 400 }
-      )
-    }
+  if (!item_name || String(item_name).trim() === "") {
+    return NextResponse.json(
+      { message: "Item name is required" },
+      { status: 400 },
+    );
+  }
+  if (quantity === undefined || quantity === null) {
+    return NextResponse.json(
+      { message: "Quantity is required" },
+      { status: 400 },
+    );
+  }
 
-    if (body.quantity === undefined || body.quantity === null) {
-      return NextResponse.json(
-        { message: "Quantity is required" },
-        { status: 400 }
-      )
-    }
-
-    console.log(`Posting to: ${API_URL}/api/inventories`, body)
-
+  try {
     const res = await fetch(`${API_URL}/api/inventories`, {
       method: "POST",
       headers: {
-        Authorization: token ? `Bearer ${token}` : "",
+        ...(token && { Authorization: `Bearer ${token}` }),
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    })
+    });
 
-    const text = await res.text()
-    let data
+    const text = await res.text();
+    console.log(`[inventory POST] backend ${res.status}:`, text.slice(0, 300));
 
+    let data: unknown;
     try {
-      data = JSON.parse(text)
+      data = JSON.parse(text);
     } catch {
-      console.error(`Failed to parse response as JSON: ${text}`)
-      data = { message: text || "Invalid response from backend" }
+      data = { message: text || "Invalid response from backend" };
     }
 
     if (!res.ok) {
-      console.error(
-        `Backend returned ${res.status} for POST /api/inventories`,
-        data
-      )
-      return NextResponse.json(
-        data || { message: "Failed to create inventory item" },
-        { status: res.status }
-      )
+      return NextResponse.json(data, { status: res.status });
     }
 
-    return NextResponse.json(data, { status: 201 })
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error("Error creating inventory item:", errorMessage)
+    return NextResponse.json(data, { status: 201 });
+  } catch (err) {
+    console.error("[inventory POST] fetch failed:", err);
     return NextResponse.json(
-      { message: `Failed to create inventory item: ${errorMessage}` },
-      { status: 500 }
-    )
+      { message: "Could not reach backend", detail: String(err) },
+      { status: 502 },
+    );
   }
 }
