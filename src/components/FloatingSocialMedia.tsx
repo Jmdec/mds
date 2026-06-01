@@ -25,7 +25,7 @@ export default function FloatingSocialMedia() {
     {
       name: "Facebook",
       icon: Facebook,
-      href: "https://www.facebook.com",
+      href: "https://www.facebook.com/pages/MDS%20Dental%20&%20Aesthetic%20Clinic/263906276815369/#",
       bgColor: "bg-[#1877F2]",
       hoverColor: "hover:bg-[#0d5dcc]",
     },
@@ -39,14 +39,14 @@ export default function FloatingSocialMedia() {
     {
       name: "WhatsApp",
       icon: MessageCircle,
-      href: "https://wa.me/63495411635",
+      href: "https://wa.me/639541439492",
       bgColor: "bg-[#25D366]",
       hoverColor: "hover:bg-[#1fb855]",
     },
     {
       name: "Call Us",
       icon: Phone,
-      href: "tel:+63495411635",
+      href: "tel:+639541439492",
       bgColor: "bg-orange-600",
       hoverColor: "hover:bg-orange-700",
     },
