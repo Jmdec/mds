@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { usePathname } from "next/navigation"
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   Facebook,
   Instagram,
@@ -9,51 +9,48 @@ import {
   Phone,
   Share2,
   X,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useAuthStore } from "@/store/authStore"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function FloatingSocialMedia() {
-  const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
-  const { isLoggedIn } = useAuthStore()
-
-  const shouldHide =
-    isLoggedIn || pathname === "/login" || pathname === "/register"
-
-  if (shouldHide) return null
+  // Hide on admin pages
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    return null;
+  }
 
   const socialLinks = [
     {
       name: "Facebook",
       icon: Facebook,
-      href: "https://www.facebook.com/share/1TafrtmDWJ/",
+      href: "https://www.facebook.com",
       bgColor: "bg-[#1877F2]",
       hoverColor: "hover:bg-[#0d5dcc]",
     },
     {
       name: "Instagram",
       icon: Instagram,
-      href: "https://www.instagram.com//",
+      href: "https://www.instagram.com",
       bgColor: "bg-[#E4405F]",
       hoverColor: "hover:bg-[#d62957]",
     },
     {
       name: "WhatsApp",
       icon: MessageCircle,
-      href: "https://wa.me/(049)5411635",
+      href: "https://wa.me/63495411635",
       bgColor: "bg-[#25D366]",
       hoverColor: "hover:bg-[#1fb855]",
     },
     {
       name: "Call Us",
       icon: Phone,
-      href: "tel:(049) 541 1635",
+      href: "tel:+63495411635",
       bgColor: "bg-orange-600",
       hoverColor: "hover:bg-orange-700",
     },
-  ]
+  ];
 
   return (
     <div className="fixed right-4 bottom-24 md:top-1/2 md:bottom-auto md:-translate-y-1/2 z-30 flex flex-col gap-4">
@@ -87,7 +84,7 @@ export default function FloatingSocialMedia() {
         ))}
       </div>
 
-      {/* Toggle Button */}
+      {/* Toggle Button (Mobile Only) */}
       <Button
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
@@ -97,5 +94,5 @@ export default function FloatingSocialMedia() {
         {isOpen ? <X className="h-6 w-6" /> : <Share2 className="h-6 w-6" />}
       </Button>
     </div>
-  )
+  );
 }

@@ -24,13 +24,14 @@ export default function ClientLayout({
 
   const pathname = usePathname() || "";
 
-  const showHeader =
-    pathname !== "/login" &&
-    pathname !== "/register" &&
-    pathname !== "/admin" &&
-    !pathname.startsWith("/admin/");
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
 
-  const showFooter = pathname !== "/admin" && !pathname.startsWith("/admin/");
+  const showHeader =
+    !isAdminRoute && pathname !== "/login" && pathname !== "/register";
+
+  const showFooter = !isAdminRoute;
+
+  const showFloatingSocial = !isAdminRoute;
 
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
@@ -48,7 +49,7 @@ export default function ClientLayout({
             {showFooter && <Footer />}
           </div>
 
-          {showHeader && <FloatingSocialMedia />}
+          {showFloatingSocial && <FloatingSocialMedia />}
 
           {/* Chatbot — fixed bottom-right */}
           <div className="fixed bottom-6 right-6 z-50">
