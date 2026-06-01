@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { motion } from "framer-motion"
+import type React from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   User,
   Mail,
@@ -11,13 +11,13 @@ import {
   EyeOff,
   Phone,
   ArrowLeftCircle,
-} from "lucide-react"
+} from "lucide-react";
 
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-import { Toaster } from "@/components/ui/sonner"
-import { toast } from "sonner"
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -26,34 +26,34 @@ export default function RegisterPage() {
     phone: "",
     password: "",
     password_confirmation: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     if (field === "phone") {
-      const numbersOnly = value.replace(/\D/g, "")
+      const numbersOnly = value.replace(/\D/g, "");
 
       setFormData((prev) => ({
         ...prev,
         [field]: numbersOnly,
-      }))
+      }));
 
-      return
+      return;
     }
 
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (
       !formData.name ||
@@ -63,36 +63,41 @@ export default function RegisterPage() {
     ) {
       toast.error("Missing Information", {
         description: "Please fill in all required fields.",
-      })
+      });
 
-      return
+      return;
     }
 
     if (formData.password !== formData.password_confirmation) {
       toast.error("Password Mismatch", {
         description: "Passwords do not match. Please check and try again.",
-      })
+      });
 
-      return
+      return;
     }
 
     if (formData.password.length < 8) {
       toast.error("Password Too Short", {
         description: "Password must be at least 8 characters long.",
-      })
+      });
 
-      return
+      return;
     }
 
-    if (formData.phone && formData.phone.length !== 11) {
+    // UPDATED: Phone validation — must be exactly 11 digits and start with "09"
+    if (
+      formData.phone &&
+      (formData.phone.length !== 11 || !formData.phone.startsWith("09"))
+    ) {
       toast.error("Invalid Phone Number", {
-        description: "Phone number must be exactly 11 digits.",
-      })
+        description:
+          "Phone number must be exactly 11 digits and start with 09.",
+      });
 
-      return
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -101,31 +106,31 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
         toast.success("Registration Successful!", {
-          description: "Please check your email to verify your account.",
-        })
+          description: "You can login now.",
+        });
 
         setTimeout(() => {
-          router.push("/login")
-        }, 1500)
+          router.push("/login");
+        }, 1500);
       } else {
         toast.error("Registration Failed", {
           description: data.message || "Registration failed. Please try again.",
-        })
+        });
       }
     } catch {
       toast.error("Connection Error", {
         description: "Unable to register. Please check your connection.",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <>
@@ -207,12 +212,9 @@ export default function RegisterPage() {
                 />
 
                 <div className="md:col-span-2">
-                  <Field
-                    label="Phone Number"
-                    icon={Phone}
+                  <PhoneField
                     value={formData.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
-                    placeholder="09123456789"
                   />
                 </div>
               </div>
@@ -233,8 +235,11 @@ export default function RegisterPage() {
                       onChange={(e) =>
                         handleInputChange("password", e.target.value)
                       }
+                      placeholder="Min. 8 characters"
                       className="w-full h-12 rounded-xl bg-[#060e1e] border border-white/[0.08]
-                                 px-4 pr-10 text-white focus:ring-2 focus:ring-cyan-400/10"
+                                 px-4 pr-10 text-white placeholder:text-slate-400
+                                 focus:outline-none focus:ring-2 focus:ring-cyan-400/10
+                                 focus:border-cyan-400/50 transition"
                     />
 
                     <button
@@ -264,8 +269,11 @@ export default function RegisterPage() {
                           e.target.value,
                         )
                       }
+                      placeholder="Repeat your password"
                       className="w-full h-12 rounded-xl bg-[#060e1e] border border-white/[0.08]
-                                 px-4 pr-10 text-white focus:ring-2 focus:ring-cyan-400/10"
+                                 px-4 pr-10 text-white placeholder:text-slate-400
+                                 focus:outline-none focus:ring-2 focus:ring-cyan-400/10
+                                 focus:border-cyan-400/50 transition"
                     />
 
                     <button
@@ -313,8 +321,10 @@ export default function RegisterPage() {
 
       <Toaster theme="dark" />
     </>
-  )
+  );
 }
+
+// ─── Reusable Field ───────────────────────────────────────────────────────────
 
 function Field({
   label,
@@ -324,12 +334,12 @@ function Field({
   onChange,
   placeholder,
 }: {
-  label: string
-  icon: React.ElementType
-  type?: string
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  placeholder: string
+  label: string;
+  icon: React.ElementType;
+  type?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
 }) {
   return (
     <div className="space-y-1.5">
@@ -344,10 +354,74 @@ function Field({
         onChange={onChange}
         placeholder={placeholder}
         className="w-full h-12 rounded-xl bg-[#060e1e] border border-white/[0.08]
-                   px-4 text-white placeholder:text-slate-600
+                   px-4 text-white placeholder:text-slate-400  {/* FIXED: was placeholder:text-slate-600 */}
                    focus:outline-none focus:ring-2 focus:ring-cyan-400/10
                    focus:border-cyan-400/50 transition"
       />
     </div>
-  )
+  );
+}
+
+// ─── Phone Field with inline validation ──────────────────────────────────────
+
+function PhoneField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  // Derive validation state from the current value
+  const getValidationState = () => {
+    if (value.length === 0) return null;
+    if (!value.startsWith("09"))
+      return { ok: false, message: "Phone number must start with 09." };
+    if (value.length < 11)
+      return {
+        ok: false,
+        message: `${value.length}/11 digits — must be exactly 11.`,
+      };
+    return { ok: true, message: "Valid phone number" };
+  };
+
+  const validation = getValidationState();
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[11px] uppercase tracking-widest text-slate-400 flex items-center gap-2">
+        <Phone className="w-3.5 h-3.5 text-cyan-400" />
+        Phone Number
+      </label>
+
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        placeholder="09123456789"
+        maxLength={11}
+        className={`w-full h-12 rounded-xl bg-[#060e1e] border
+                   px-4 text-white placeholder:text-slate-400
+                   focus:outline-none focus:ring-2 focus:ring-cyan-400/10
+                   focus:border-cyan-400/50 transition
+                   ${
+                     validation === null
+                       ? "border-white/[0.08]"
+                       : validation.ok
+                         ? "border-cyan-400/50"
+                         : "border-red-500/60"
+                   }`}
+      />
+
+      {validation !== null && (
+        <p
+          className={`text-[11px] ${
+            validation.ok ? "text-cyan-400" : "text-red-400"
+          }`}
+        >
+          {validation.ok ? "✓ " : ""}
+          {validation.message}
+        </p>
+      )}
+    </div>
+  );
 }
