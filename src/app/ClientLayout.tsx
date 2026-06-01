@@ -28,10 +28,9 @@ export default function ClientLayout({
     pathname !== "/login" &&
     pathname !== "/register" &&
     pathname !== "/admin" &&
-    !pathname.startsWith("/admin/") &&
-    pathname !== "/dashboard" &&
-    pathname !== "/profile" &&
-    pathname !== "/appointments";
+    !pathname.startsWith("/admin/");
+
+  const showFooter = pathname !== "/admin" && !pathname.startsWith("/admin/");
 
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
@@ -46,7 +45,7 @@ export default function ClientLayout({
           <div className="min-h-screen flex flex-col">
             {showHeader && <Header />}
             <main className="flex-1">{children}</main>
-            {showHeader && <Footer />}
+            {showFooter && <Footer />}
           </div>
 
           {showHeader && <FloatingSocialMedia />}

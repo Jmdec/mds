@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -12,6 +15,7 @@ import {
   Smile,
   Heart,
   Zap,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -22,38 +26,53 @@ const fade = {
   transition: { duration: 0.6 },
 };
 
-const services = [
-  {
-    icon: Sparkles,
-    title: "Dental Implants",
-    desc: "Titanium-grade precision implants for a permanent, natural-looking restoration.",
-  },
-  {
-    icon: Smile,
-    title: "Teeth Whitening",
-    desc: "Clinical-strength whitening systems that deliver results in a single session.",
-  },
-  {
-    icon: Shield,
-    title: "Orthodontics",
-    desc: "Invisible aligners and advanced braces for precision teeth alignment.",
-  },
-  {
-    icon: Heart,
-    title: "Skin Rejuvenation",
-    desc: "Advanced dermal therapies to restore radiance and elasticity.",
-  },
-  {
-    icon: Zap,
-    title: "Facial Contouring",
-    desc: "Non-invasive sculpting procedures for refined facial definition.",
-  },
-  {
-    icon: Star,
-    title: "Anti-Aging",
-    desc: "Cutting-edge treatments that reverse visible signs of aging at the cellular level.",
-  },
+// Map icon name strings from API to Lucide components
+const ICON_MAP: Record<string, React.ElementType> = {
+  Sparkles,
+  Smile,
+  Shield,
+  Heart,
+  Zap,
+  Star,
+  Award,
+  Users,
+};
+
+// Fallback icon list in order, used when API doesn't provide an icon name
+const FALLBACK_ICONS: React.ElementType[] = [
+  Sparkles,
+  Smile,
+  Shield,
+  Heart,
+  Zap,
+  Star,
+  Award,
+  Users,
 ];
+
+interface Service {
+  id: number;
+  name: string;
+  description: string;
+  icon?: string;
+  price?: number;
+  duration?: number;
+  category?: string;
+}
+
+interface ServicesApiResponse {
+  data: Service[];
+}
+
+function normalizeServices(raw: unknown): Service[] {
+  if (Array.isArray(raw)) return raw as Service[];
+  if (raw && typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    if (Array.isArray(obj.data)) return obj.data as Service[];
+    if (Array.isArray(obj.services)) return obj.services as Service[];
+  }
+  return [];
+}
 
 const stats = [
   { value: "15K+", label: "Patients Treated" },
@@ -63,6 +82,26 @@ const stats = [
 ];
 
 export default function Home() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchServices() {
+      try {
+        const res = await fetch("/api/services");
+        if (!res.ok) throw new Error("Failed to fetch services");
+        const raw: unknown = await res.json();
+        setServices(normalizeServices(raw));
+      } catch (err) {
+        console.error(err);
+        setServices([]);
+      } finally {
+        setServicesLoading(false);
+      }
+    }
+    fetchServices();
+  }, []);
+
   return (
     <div>
       {/* Hero */}
@@ -137,7 +176,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services Preview */}
+      {/* Services Preview — dynamic */}
       <section className="bg-[#F8FAFC] py-24">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fade} className="text-center mb-16">
@@ -148,27 +187,85 @@ export default function Home() {
               Precision Services
             </h2>
           </motion.div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((s, i) => (
-              <motion.div key={i} {...fade} transition={{ delay: i * 0.08 }}>
-                <Card className="p-6 bg-white border-slate-200 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-600/5 transition-all group cursor-pointer h-full">
-                  <s.icon className="text-blue-600 mb-4" size={28} />
-                  <h3 className="font-serif text-lg text-slate-900 mb-2">
-                    {s.title}
-                  </h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">
-                    {s.desc}
-                  </p>
-                  <Link
-                    href="/book"
-                    className="inline-flex items-center text-blue-600 text-sm mt-4 opacity-0 group-hover:opacity-100 transition-opacity"
+
+          {/* Loading state */}
+          {servicesLoading && (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!servicesLoading && services.length === 0 && (
+            <div className="text-center py-20 text-slate-400">
+              No services available at the moment.
+            </div>
+          )}
+
+          {/* Service cards */}
+          {!servicesLoading && services.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((s, i) => {
+                // Resolve icon: use API-provided name → fallback cycle
+                const IconComponent =
+                  (s.icon && ICON_MAP[s.icon]) ||
+                  FALLBACK_ICONS[i % FALLBACK_ICONS.length];
+
+                return (
+                  <motion.div
+                    key={s.id}
+                    {...fade}
+                    transition={{ delay: i * 0.08 }}
                   >
-                    Book now <ArrowRight size={14} className="ml-1" />
-                  </Link>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                    <Card className="p-6 bg-white border-slate-200 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-600/5 transition-all group cursor-pointer h-full flex flex-col">
+                      <IconComponent
+                        className="text-blue-600 mb-4 shrink-0"
+                        size={28}
+                      />
+
+                      <h3 className="font-serif text-lg text-slate-900 mb-2">
+                        {s.name}
+                      </h3>
+
+                      <p className="text-slate-500 text-sm leading-relaxed flex-1">
+                        {s.description}
+                      </p>
+
+                      {/* Optional price / duration badges */}
+                      {(s.price !== undefined || s.duration !== undefined) && (
+                        <div className="flex gap-3 mt-3 flex-wrap">
+                          {s.price !== undefined && (
+                            <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-medium">
+                              ₱{Number(s.price).toLocaleString("en-PH")}
+                            </span>
+                          )}
+                          {s.duration !== undefined && (
+                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">
+                              {s.duration} min
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* View all services link */}
+          {!servicesLoading && services.length > 0 && (
+            <motion.div {...fade} className="text-center mt-12">
+              <Link href="/services">
+                <Button
+                  variant="outline"
+                  className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-all"
+                >
+                  View All Services <ArrowRight size={16} className="ml-2" />
+                </Button>
+              </Link>
+            </motion.div>
+          )}
         </div>
       </section>
 
