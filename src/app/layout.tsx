@@ -1,8 +1,8 @@
-import type React from "react"
-import type { Metadata } from "next"
-import ClientLayout from "./ClientLayout"
-import ServiceWorkerProvider from "@/components/ServiceWorkerProvider"
-import "./globals.css"
+import type React from "react";
+import type { Metadata } from "next";
+import ClientLayout from "./ClientLayout";
+import ServiceWorkerProvider from "@/components/ServiceWorkerProvider";
+import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mdsdental.com"),
@@ -14,9 +14,8 @@ export const metadata: Metadata = {
 
   description:
     "MDS Dental & Aesthetic Clinic provides advanced dental and aesthetic care in Batangas, Philippines. We specialize in general dentistry, orthodontics, and skin aesthetic treatments delivered with modern technology and patient-centered care.",
-  
+
   keywords: [
-    // Location-specific keywords
     "dental clinic Batangas",
     "best dental clinic Batangas Philippines",
     "dentist Batangas",
@@ -25,8 +24,6 @@ export const metadata: Metadata = {
     "teeth whitening Batangas",
     "orthodontist Batangas",
     "skin clinic Batangas",
-
-    // Dental service keywords
     "general dentistry",
     "cosmetic dentistry Philippines",
     "dental implants Philippines",
@@ -37,8 +34,6 @@ export const metadata: Metadata = {
     "dental veneers Philippines",
     "root canal Batangas",
     "pediatric dentist Batangas",
-
-    // Aesthetic service keywords
     "facial treatment Batangas",
     "skin rejuvenation Philippines",
     "botox Batangas",
@@ -47,23 +42,17 @@ export const metadata: Metadata = {
     "chemical peel Philippines",
     "laser skin treatment Batangas",
     "anti-aging treatment Philippines",
-
-    // Experience keywords
     "premium dental clinic Philippines",
     "modern dental clinic",
     "painless dentistry",
     "affordable dental care Batangas",
     "trusted dentist Philippines",
     "professional aesthetic clinic",
-
-    // Occasion keywords
     "dental check-up",
     "smile makeover Philippines",
     "dental consultation Batangas",
     "aesthetic consultation",
     "dental emergency Batangas",
-
-    // Brand keywords
     "MDS Dental",
     "MDS Aesthetic Clinic",
     "MDS Dental & Aesthetic Clinic",
@@ -196,7 +185,7 @@ export const metadata: Metadata = {
     "msapplication-TileColor": "#1a6fa8",
     "msapplication-config": "/browserconfig.xml",
   },
-}
+};
 
 export const viewport = {
   themeColor: "#0a2540",
@@ -205,14 +194,13 @@ export const viewport = {
   maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  // Business Schema - Dental & Aesthetic Clinic
   const businessSchema = {
     "@context": "https://schema.org",
     "@type": "Dentist",
@@ -235,14 +223,11 @@ export default function RootLayout({
     priceRange: "₱₱-₱₱₱",
     currenciesAccepted: "PHP",
     paymentAccepted: "Cash, Credit Card, Debit Card, GCash, Maya, PhilHealth",
-
-    telephone: "+63-XX-XXX-XXXX", // Replace with actual phone
+    telephone: "+63-XX-XXX-XXXX",
     email: "appointments@mdsdental.com",
     url: "https://mdsdental.com",
-
     hasMap: "https://maps.google.com/?q=MDS+Dental+Aesthetic+Clinic+Batangas",
     acceptsReservations: true,
-
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -263,22 +248,19 @@ export default function RootLayout({
         closes: "15:00",
       },
     ],
-
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Your Street Address", // Replace with actual address
+      streetAddress: "Your Street Address",
       addressLocality: "Batangas City",
       addressRegion: "Batangas",
       postalCode: "4200",
       addressCountry: "PH",
     },
-
     geo: {
       "@type": "GeoCoordinates",
-      latitude: "13.7565", // Batangas City approximate — replace with exact
+      latitude: "13.7565",
       longitude: "121.0583",
     },
-
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -286,7 +268,6 @@ export default function RootLayout({
       bestRating: "5",
       worstRating: "1",
     },
-
     amenityFeature: [
       {
         "@type": "LocationFeatureSpecification",
@@ -319,7 +300,6 @@ export default function RootLayout({
         value: true,
       },
     ],
-
     potentialAction: {
       "@type": "ReserveAction",
       target: {
@@ -335,9 +315,8 @@ export default function RootLayout({
         name: "Dental or Aesthetic Appointment",
       },
     },
-  }
+  };
 
-  // Organization Schema
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalOrganization",
@@ -352,7 +331,7 @@ export default function RootLayout({
     telephone: "+63-XX-XXX-XXXX",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Your Street Address", // Replace with actual address
+      streetAddress: "Your Street Address",
       addressLocality: "Batangas City",
       addressRegion: "Batangas",
       postalCode: "4200",
@@ -368,9 +347,8 @@ export default function RootLayout({
       "@type": "QuantitativeValue",
       value: "10-25",
     },
-  }
+  };
 
-  // WebSite Schema
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -391,9 +369,8 @@ export default function RootLayout({
       "query-input": "required name=search_term_string",
     },
     inLanguage: "en-PH",
-  }
+  };
 
-  // Breadcrumb Schema
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -423,9 +400,8 @@ export default function RootLayout({
         item: "https://mdsdental.com/appointments",
       },
     ],
-  }
+  };
 
-  // FAQ Schema
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -487,9 +463,8 @@ export default function RootLayout({
         },
       },
     ],
-  }
+  };
 
-  // Medical Service Schema
   const medicalServiceSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalBusiness",
@@ -540,44 +515,57 @@ export default function RootLayout({
       ],
     },
     inLanguage: "en-PH",
-  }
+  };
 
   return (
     <html lang="en-PH">
       <head>
-        {/* Primary Structured Data - Dental Business */}
+        {/*
+         * ─── PWA INSTALL PROMPT — MUST BE FIRST IN <head> ───────────────────────
+         * Captures `beforeinstallprompt` synchronously before any JS bundle loads.
+         * React hydration is too slow; this script runs immediately so the event
+         * is never missed. The PWAInstallContext reads window.__pwaInstallPrompt
+         * on mount and triggers the banner automatically.
+         */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (window.matchMedia('(display-mode: standalone)').matches) return;
+                if (window.navigator.standalone === true) return;
+                window.addEventListener('beforeinstallprompt', function(e) {
+                  e.preventDefault();
+                  window.__pwaInstallPrompt = e;
+                  window.dispatchEvent(new Event('pwaInstallReady'));
+                });
+              })();
+            `,
+          }}
+        />
+
+        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(businessSchema) }}
         />
-
-        {/* Organization Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(organizationSchema),
           }}
         />
-
-        {/* Website Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
-
-        {/* Breadcrumb Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
-
-        {/* FAQ Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
-
-        {/* Medical Service Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -612,7 +600,7 @@ export default function RootLayout({
           content="MDS Dental & Aesthetic Clinic"
         />
 
-        {/* Preconnect to external domains for performance */}
+        {/* Performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -621,11 +609,9 @@ export default function RootLayout({
         />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-
-        {/* Preload critical assets */}
         <link rel="preload" as="image" href="/logo.png" />
 
-        {/* Geographic meta tags — Batangas City */}
+        {/* Geographic */}
         <meta name="geo.region" content="PH-BAN" />
         <meta
           name="geo.placename"
@@ -634,7 +620,7 @@ export default function RootLayout({
         <meta name="geo.position" content="13.7565;121.0583" />
         <meta name="ICBM" content="13.7565, 121.0583" />
 
-        {/* Additional meta tags */}
+        {/* Misc */}
         <meta name="format-detection" content="telephone=yes" />
         <meta name="language" content="English" />
         <meta name="revisit-after" content="7 days" />
@@ -644,17 +630,13 @@ export default function RootLayout({
         <meta name="HandheldFriendly" content="True" />
         <meta name="MobileOptimized" content="320" />
 
-        {/* Canonical URL */}
+        {/* SEO */}
         <link rel="canonical" href="https://mdsdental.com" />
-
-        {/* Sitemap */}
         <link
           rel="sitemap"
           type="application/xml"
           href="https://mdsdental.com/sitemap.xml"
         />
-
-        {/* Alternative languages */}
         <link rel="alternate" hrefLang="en-ph" href="https://mdsdental.com" />
         <link rel="alternate" hrefLang="en" href="https://mdsdental.com/en" />
         <link
@@ -669,5 +651,5 @@ export default function RootLayout({
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
-  )
+  );
 }

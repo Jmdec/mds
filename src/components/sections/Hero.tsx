@@ -1,7 +1,7 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   ArrowRight,
   Shield,
@@ -12,16 +12,15 @@ import {
   Smile,
   Heart,
   Zap,
-} from "lucide-react"
-import { motion } from "framer-motion"
-import TestimonialsSection from "./Testimonials"
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 const fade = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
   transition: { duration: 0.6 },
-}
+};
 
 const services = [
   {
@@ -54,14 +53,14 @@ const services = [
     title: "Anti-Aging",
     desc: "Cutting-edge treatments that reverse visible signs of aging at the cellular level.",
   },
-]
+];
 
 const stats = [
   { value: "15K+", label: "Patients Treated" },
   { value: "98%", label: "Satisfaction Rate" },
   { value: "12+", label: "Years Experience" },
   { value: "25+", label: "Specialists" },
-]
+];
 
 export default function Home() {
   return (
@@ -96,7 +95,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800/50 px-8"
+                  className="bg-cyan-400 text-slate-950 hover:bg-cyan-300 font-medium px-8 hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all"
                 >
                   Explore Services
                 </Button>
@@ -129,7 +128,9 @@ export default function Home() {
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <p className="text-3xl font-bold text-cyan-400 font-serif">{s.value}</p>
+              <p className="text-3xl font-bold text-cyan-400 font-serif">
+                {s.value}
+              </p>
               <p className="text-slate-500 text-sm mt-1">{s.label}</p>
             </motion.div>
           ))}
@@ -140,16 +141,24 @@ export default function Home() {
       <section className="bg-[#F8FAFC] py-24">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fade} className="text-center mb-16">
-            <p className="text-blue-600 text-sm uppercase tracking-[0.3em] mb-3">Our Expertise</p>
-            <h2 className="font-serif text-4xl text-slate-900">Precision Services</h2>
+            <p className="text-blue-600 text-sm uppercase tracking-[0.3em] mb-3">
+              Our Expertise
+            </p>
+            <h2 className="font-serif text-4xl text-slate-900">
+              Precision Services
+            </h2>
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((s, i) => (
               <motion.div key={i} {...fade} transition={{ delay: i * 0.08 }}>
                 <Card className="p-6 bg-white border-slate-200 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-600/5 transition-all group cursor-pointer h-full">
                   <s.icon className="text-blue-600 mb-4" size={28} />
-                  <h3 className="font-serif text-lg text-slate-900 mb-2">{s.title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">{s.desc}</p>
+                  <h3 className="font-serif text-lg text-slate-900 mb-2">
+                    {s.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed">
+                    {s.desc}
+                  </p>
                   <Link
                     href="/book"
                     className="inline-flex items-center text-blue-600 text-sm mt-4 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -177,8 +186,12 @@ export default function Home() {
             />
           </motion.div>
           <motion.div {...fade} transition={{ delay: 0.2 }}>
-            <p className="text-cyan-400 text-sm uppercase tracking-[0.3em] mb-3">Why MDS Clinic</p>
-            <h2 className="font-serif text-4xl text-white mb-8">Engineered for Excellence</h2>
+            <p className="text-cyan-400 text-sm uppercase tracking-[0.3em] mb-3">
+              Why MDS Clinic
+            </p>
+            <h2 className="font-serif text-4xl text-white mb-8">
+              Engineered for Excellence
+            </h2>
             {[
               {
                 icon: Award,
@@ -211,17 +224,20 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <TestimonialsSection />
 
       {/* Final CTA */}
       <section className="bg-[#020617] py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 via-transparent to-blue-600/5" />
-        <motion.div {...fade} className="relative max-w-3xl mx-auto px-6 text-center">
+        <motion.div
+          {...fade}
+          className="relative max-w-3xl mx-auto px-6 text-center"
+        >
           <h2 className="font-serif text-4xl md:text-5xl text-white mb-6">
             Ready to Transform Your Smile?
           </h2>
           <p className="text-slate-400 text-lg mb-10">
-            Book your consultation today and take the first step toward clinical excellence.
+            Book your consultation today and take the first step toward clinical
+            excellence.
           </p>
           <Link href="/book">
             <Button
@@ -234,5 +250,5 @@ export default function Home() {
         </motion.div>
       </section>
     </div>
-  )
+  );
 }
