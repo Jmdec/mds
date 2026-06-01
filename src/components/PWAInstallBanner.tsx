@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { usePWAInstall } from "@/context/PWAInstallContext";
 
 export default function PWAInstallBanner() {
@@ -10,10 +11,12 @@ export default function PWAInstallBanner() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a2540] border-t border-blue-700 shadow-lg px-4 py-3 flex items-center justify-between gap-3">
       <div className="flex items-center gap-3">
-        <img
+        <Image
           src="/icon-192x192.png"
           alt="App icon"
-          className="w-10 h-10 rounded-xl"
+          width={40}
+          height={40}
+          className="rounded-xl"
         />
         <div>
           <p className="text-white font-semibold text-sm">

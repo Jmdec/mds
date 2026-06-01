@@ -13,6 +13,15 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+// Extend Window to avoid `any`
+interface WindowWithPWA extends Window {
+  __pwaInstallPrompt?: BeforeInstallPromptEvent;
+}
+
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 interface PWAInstallContextType {
   deferredPrompt: BeforeInstallPromptEvent | null;
   showBanner: boolean;
@@ -28,13 +37,11 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    // Already installed
     if (window.matchMedia("(display-mode: standalone)").matches) return;
-    if ((window.navigator as any).standalone === true) return;
+    if ((window.navigator as NavigatorWithStandalone).standalone === true)
+      return;
     if (sessionStorage.getItem("pwa-banner-dismissed")) return;
 
-    // The event may have already fired before this effect ran,
-    // so we listen AND check a global we set in _document or SW
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -43,9 +50,9 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // If the event was stored globally before React mounted
-    if ((window as any).__pwaInstallPrompt) {
-      setDeferredPrompt((window as any).__pwaInstallPrompt);
+    const pwaWindow = window as WindowWithPWA;
+    if (pwaWindow.__pwaInstallPrompt) {
+      setDeferredPrompt(pwaWindow.__pwaInstallPrompt);
       setShowBanner(true);
     }
 
@@ -59,7 +66,7 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
     if (outcome === "accepted") {
       setShowBanner(false);
       setDeferredPrompt(null);
-      (window as any).__pwaInstallPrompt = null;
+      (window as WindowWithPWA).__pwaInstallPrompt = undefined;
     }
   };
 

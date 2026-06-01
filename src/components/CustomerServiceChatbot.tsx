@@ -217,12 +217,12 @@ export default function CustomerServiceChatbot() {
           </div>
 
           {/* Quick Replies */}
-          <div className="px-3 py-2 flex gap-2 overflow-x-auto scrollbar-none border-t border-blue-800/40">
+          <div className="px-3 py-2 flex flex-wrap gap-2 border-t border-blue-800/40">
             {QUICK_REPLIES.map((qr) => (
               <button
                 key={qr}
                 onClick={() => sendMessage(qr)}
-                className="flex-shrink-0 text-xs px-3 py-1.5 rounded-full border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/10 transition whitespace-nowrap"
+                className="text-xs px-3 py-1.5 rounded-full border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/10 transition whitespace-nowrap"
               >
                 {qr}
               </button>
