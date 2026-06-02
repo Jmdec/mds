@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import {
   Home,
+  Building2,
   CalendarPlus,
   ClipboardList,
   User,
@@ -67,6 +68,7 @@ export default function ProtectedNav({ userRole = "user" }: ProtectedNavProps) {
         { path: "/admin/cases", icon: ClipboardList, label: "Cases" },
         { path: "/admin/testimonials", icon: Star, label: "Testimonials" },
         { path: "/admin/about", icon: Star, label: "About Section" },
+        { path: "/admin/facilities", icon: Building2, label: "Facilities" },
       ],
     },
     {
