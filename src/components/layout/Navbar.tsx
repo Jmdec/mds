@@ -20,7 +20,7 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
-  // { href: "/results", label: "Results" },
+  { href: "/facilities", label: "Facilities" },
   { href: "/contact", label: "Contact" },
 ];
 
