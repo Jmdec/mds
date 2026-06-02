@@ -1,12 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Menu, X, LogOut, Download, Calendar, User, ChevronDown } from "lucide-react"
-import { useAuthStore } from "@/store/authStore"
-import { usePWAInstall } from "@/hooks/use-pwa-install"
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Menu,
+  X,
+  LogOut,
+  Download,
+  Calendar,
+  User,
+  ChevronDown,
+} from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { usePWAInstall } from "@/hooks/use-pwa-install";
 
 const links = [
   { href: "/", label: "Home" },
@@ -14,55 +22,63 @@ const links = [
   { href: "/services", label: "Services" },
   // { href: "/results", label: "Results" },
   { href: "/contact", label: "Contact" },
-]
+];
 
 export default function Navbar() {
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = usePathname();
+  const router = useRouter();
 
-  const { isLoggedIn, user, logout, initializeAuth } = useAuthStore()
-  const { canInstall, handleInstall } = usePWAInstall()
+  const { isLoggedIn, user, logout, initializeAuth } = useAuthStore();
+  const { canInstall, handleInstall } = usePWAInstall();
 
-  const [scrolled, setScrolled] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    initializeAuth()
-    setMounted(true)
+    initializeAuth();
+    setMounted(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener("scroll", onScroll)
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
-    setMobileOpen(false)
-  }, [pathname])
+    setMobileOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false)
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setDropdownOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
-    logout()
-    router.push("/")
-  }
+    logout();
+    router.push("/");
+  };
 
   const initials = user?.name
-    ? user.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
-    : "?"
+    ? user.name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "?";
 
   return (
     <nav
@@ -73,9 +89,11 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-
         {/* Logo */}
-        <Link href="/" className="font-serif text-xl text-white tracking-wide shrink-0">
+        <Link
+          href="/"
+          className="font-serif text-xl text-white tracking-wide shrink-0"
+        >
           MDS <span className="text-cyan-400">Clinic</span>
         </Link>
 
@@ -86,7 +104,9 @@ export default function Navbar() {
               key={l.href}
               href={l.href}
               className={`text-sm tracking-wide transition-colors ${
-                pathname === l.href ? "text-cyan-400" : "text-slate-300 hover:text-white"
+                pathname === l.href
+                  ? "text-cyan-400"
+                  : "text-slate-300 hover:text-white"
               }`}
             >
               {l.label}
@@ -107,8 +127,8 @@ export default function Navbar() {
             </Button>
           )}
 
-          {mounted && (
-            isLoggedIn && user ? (
+          {mounted &&
+            (isLoggedIn && user ? (
               <div className="flex items-center gap-3">
                 <Link href="/book">
                   <Button className="bg-cyan-400 text-slate-950 hover:bg-cyan-300 font-medium text-sm px-5 hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all flex items-center gap-2">
@@ -117,7 +137,10 @@ export default function Navbar() {
                   </Button>
                 </Link>
 
-                <div className="relative flex items-center gap-2 pl-3 border-l border-white/10" ref={dropdownRef}>
+                <div
+                  className="relative flex items-center gap-2 pl-3 border-l border-white/10"
+                  ref={dropdownRef}
+                >
                   <button
                     onClick={() => setDropdownOpen((v) => !v)}
                     className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -137,12 +160,19 @@ export default function Navbar() {
                   {dropdownOpen && (
                     <div className="absolute right-0 top-full mt-3 w-52 bg-[#0f172a] border border-white/10 rounded-xl shadow-xl overflow-hidden">
                       <div className="px-4 py-3 border-b border-white/10">
-                        <p className="text-white text-sm font-medium truncate">{user.name}</p>
-                        <p className="text-slate-500 text-xs truncate">{user.email}</p>
+                        <p className="text-white text-sm font-medium truncate">
+                          {user.name}
+                        </p>
+                        <p className="text-slate-500 text-xs truncate">
+                          {user.email}
+                        </p>
                       </div>
                       <div className="py-1">
                         <button
-                          onClick={() => { setDropdownOpen(false); router.push("/profile") }}
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            router.push("/profile");
+                          }}
                           className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-white/5 hover:text-white text-sm transition-colors"
                         >
                           <User size={14} className="text-cyan-400" />
@@ -166,8 +196,7 @@ export default function Navbar() {
                   Login
                 </Button>
               </Link>
-            )
-          )}
+            ))}
         </div>
 
         {/* Mobile hamburger */}
@@ -197,7 +226,10 @@ export default function Navbar() {
 
           {canInstall && mounted && (
             <Button
-              onClick={() => { handleInstall(); setMobileOpen(false) }}
+              onClick={() => {
+                handleInstall();
+                setMobileOpen(false);
+              }}
               className="w-full mt-4 bg-cyan-400/20 text-cyan-400 hover:bg-cyan-400/30 border border-cyan-400 flex items-center justify-center gap-2"
             >
               <Download size={16} />
@@ -205,14 +237,16 @@ export default function Navbar() {
             </Button>
           )}
 
-          {mounted && (
-            isLoggedIn && user ? (
+          {mounted &&
+            (isLoggedIn && user ? (
               <div className="mt-4 space-y-3">
                 <div className="flex items-center gap-3 px-1 py-2 bg-white/5 rounded-lg">
                   <div className="w-8 h-8 rounded-full bg-cyan-400/20 border border-cyan-400/40 flex items-center justify-center text-cyan-400 text-xs font-bold">
                     {initials}
                   </div>
-                  <span className="text-white text-sm font-medium truncate">{user.name}</span>
+                  <span className="text-white text-sm font-medium truncate">
+                    {user.name}
+                  </span>
                 </div>
                 <Link href="/book" className="block">
                   <Button className="w-full bg-cyan-400 text-slate-950 hover:bg-cyan-300 flex items-center justify-center gap-2">
@@ -244,10 +278,9 @@ export default function Navbar() {
                   Login
                 </Button>
               </Link>
-            )
-          )}
+            ))}
         </div>
       )}
     </nav>
-  )
+  );
 }
