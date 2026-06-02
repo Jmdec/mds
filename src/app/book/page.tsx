@@ -509,7 +509,7 @@ function BookInner() {
                           setPhone(val);
                           validatePhone(val);
                         }}
-                        className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 ${
+                        className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 [&]:text-white [color-scheme:dark] ${
                           phoneError
                             ? "border-red-400/50 focus-visible:ring-red-400/30"
                             : ""
