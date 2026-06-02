@@ -94,7 +94,7 @@ export default function Navbar() {
           href="/"
           className="font-serif text-xl text-white tracking-wide shrink-0"
         >
-          MDS <span className="text-cyan-400">Clinic</span>
+          MDS Dental & <span className="text-cyan-400">Aesthetic Clinic</span>
         </Link>
 
         {/* Desktop nav links */}
