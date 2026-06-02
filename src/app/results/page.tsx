@@ -104,8 +104,6 @@ const STATS = [
   { value: "98%", label: "Satisfaction rate" },
 ];
 
-// ─── Comparison Slider ─────────────────────────────────────────────────────────
-
 function ComparisonSlider({
   before,
   after,
@@ -127,7 +125,6 @@ function ComparisonSlider({
     );
   };
 
-  // Attach listeners inline via onMouse/Touch to keep it simple & SSR-safe
   return (
     <div
       ref={containerRef}
@@ -157,7 +154,6 @@ function ComparisonSlider({
         dragging.current = false;
       }}
     >
-      {/* Before */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={before}
@@ -165,7 +161,6 @@ function ComparisonSlider({
         draggable={false}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      {/* After */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={after}
@@ -174,19 +169,16 @@ function ComparisonSlider({
         className="absolute inset-0 w-full h-full object-cover"
         style={{ clipPath: `inset(0 ${100 - pct}% 0 0)` }}
       />
-      {/* Labels */}
       <span className="pointer-events-none absolute bottom-3 left-3 z-10 text-[10px] font-semibold uppercase tracking-widest bg-black/50 text-white px-2.5 py-1 rounded-full">
         Before
       </span>
       <span className="pointer-events-none absolute bottom-3 right-3 z-10 text-[10px] font-semibold uppercase tracking-widest bg-black/50 text-white px-2.5 py-1 rounded-full">
         After
       </span>
-      {/* Divider */}
       <div
         className="pointer-events-none absolute top-0 bottom-0 w-0.5 bg-white z-10"
         style={{ left: `${pct}%` }}
       />
-      {/* Handle */}
       <div
         className="pointer-events-none absolute top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"
         style={{ left: `${pct}%` }}
@@ -231,8 +223,6 @@ function Stars({ count = 5 }: { count?: number }) {
     </div>
   );
 }
-
-// ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function BeforeAfter() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -315,7 +305,7 @@ export default function BeforeAfter() {
               </div>
               <div>
                 <p className="text-slate-600 text-sm italic leading-relaxed">
-                  "{activeCase.testimonial}"
+                  &ldquo;{activeCase.testimonial}&rdquo;
                 </p>
                 <p className="text-slate-400 text-xs mt-2">
                   — Patient {activeCase.patient}
@@ -387,6 +377,7 @@ export default function BeforeAfter() {
                         {c.result}
                       </p>
                     </div>
+
                     <a
                       href="/book"
                       onClick={(e) => e.stopPropagation()}
@@ -425,9 +416,10 @@ export default function BeforeAfter() {
             <em className="italic text-sky-400">transformation?</em>
           </h2>
           <p className="text-slate-400 mb-8 text-base leading-relaxed">
-            Book a free consultation — no commitment, just a conversation about
-            your smile.
+            Book a free consultation &mdash; no commitment, just a conversation
+            about your smile.
           </p>
+
           <a
             href="/book"
             className="inline-flex items-center gap-2 px-8 py-4 bg-sky-400 text-slate-900 font-semibold rounded-2xl hover:bg-sky-300 transition-colors text-sm"

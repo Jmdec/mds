@@ -25,9 +25,9 @@ interface ContactInquiry {
   created_at: string;
 }
 
-interface ContactsApiResponse {
-  data: ContactInquiry[];
-}
+// interface ContactsApiResponse {
+//   data: ContactInquiry[];
+// }
 
 const ITEMS_PER_PAGE = 10;
 

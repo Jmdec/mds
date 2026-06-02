@@ -308,7 +308,7 @@ export default function About() {
                   <div className="relative p-8 bg-white/[0.03] border border-white/10 rounded-2xl overflow-hidden group hover:border-cyan-400/30 transition-colors">
                     <div className="absolute top-0 right-0 w-52 h-52 bg-cyan-400/5 rounded-full blur-3xl group-hover:bg-cyan-400/10 transition-colors" />
                     <span className="absolute top-2 left-6 text-7xl font-serif text-cyan-400/20 leading-none select-none">
-                      "
+                      &ldquo;
                     </span>
                     <div className="relative pt-6">
                       <p className="text-slate-200 text-base leading-relaxed italic mb-5">
