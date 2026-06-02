@@ -25,7 +25,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import Header from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 const fade = {
   initial: { opacity: 0, y: 30 },
@@ -85,9 +84,11 @@ interface ApiService {
 
 function BookInner() {
   const router = useRouter();
-  const { isLoggedIn, user, token } = useAuthStore();
+  const { isLoggedIn, user, token, _hasHydrated } = useAuthStore();
 
+  // ── Auth guard — wait for hydration before redirecting ──
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!isLoggedIn || !token) {
       const currentPath =
         typeof window !== "undefined"
@@ -95,13 +96,11 @@ function BookInner() {
           : "/book";
       router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`);
     }
-  }, [isLoggedIn, token, router]);
+  }, [_hasHydrated, isLoggedIn, token, router]);
 
-  // All services from API (for the dropdown)
   const [allServices, setAllServices] = useState<ApiService[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
 
-  // The selected service (either chosen from dropdown OR pre-filled from URL)
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
     null,
   );
@@ -109,15 +108,23 @@ function BookInner() {
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
-  const [name, setName] = useState(user?.name ?? "");
-  const [email, setEmail] = useState(user?.email ?? "");
+
+  // Start empty — synced from user after hydration
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch all services for the dropdown
+  // ── Auto-fill name & email once user is available after hydration ──
+  useEffect(() => {
+    if (user?.name) setName(user.name);
+    if (user?.email) setEmail(user.email);
+  }, [user]);
+
   useEffect(() => {
     setServicesLoading(true);
     fetch("/api/services?per_page=100", { cache: "no-store" })
@@ -136,7 +143,6 @@ function BookInner() {
       .finally(() => setServicesLoading(false));
   }, []);
 
-  // Read query params — if service_id is present, lock to that service
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const qId = params.get("service_id");
@@ -146,7 +152,6 @@ function BookInner() {
     }
   }, []);
 
-  // Auto-redirect after success
   useEffect(() => {
     if (!submitted) return;
     if (countdown <= 0) {
@@ -158,10 +163,16 @@ function BookInner() {
   }, [submitted, countdown, router]);
 
   const days = generateDays();
-
-  // Resolve the active service object from allServices
   const activeService =
     allServices.find((s) => s.id === selectedServiceId) ?? null;
+
+  function validatePhone(value: string) {
+    if (value.length > 0 && (!/^09/.test(value) || value.length < 11)) {
+      setPhoneError("Phone must start with 09 and be exactly 11 digits.");
+    } else {
+      setPhoneError("");
+    }
+  }
 
   async function handleSubmit() {
     if (!selectedDate || !selectedTime || !name || !email || !phone) {
@@ -170,6 +181,10 @@ function BookInner() {
     }
     if (!selectedServiceId) {
       setError("Please select a service.");
+      return;
+    }
+    if (!/^09\d{9}$/.test(phone)) {
+      setError("Phone number must be 11 digits and start with 09.");
       return;
     }
 
@@ -218,9 +233,10 @@ function BookInner() {
     }
   }
 
-  if (!isLoggedIn || !token) return null;
+  // Show nothing while hydrating or if not logged in
+  if (!_hasHydrated || !isLoggedIn || !token) return null;
 
-  // ── Success screen ──────────────────────────────────────────────────────────
+  // ── Success screen ────────────────────────────────────────────────────────
   if (submitted) {
     return (
       <div className="min-h-screen bg-[#020617] flex flex-col">
@@ -289,12 +305,11 @@ function BookInner() {
             </div>
           </motion.div>
         </div>
-        <Footer />
       </div>
     );
   }
 
-  // ── Booking form ────────────────────────────────────────────────────────────
+  // ── Booking form ──────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#020617] flex flex-col">
       <Header />
@@ -333,7 +348,6 @@ function BookInner() {
                     Select Service
                   </h3>
 
-                  {/* Locked pill when coming from services page */}
                   {lockedFromUrl && activeService ? (
                     <div className="flex items-center justify-between px-4 py-3 bg-cyan-400/10 border border-cyan-400/30 rounded-xl">
                       <div className="flex items-center gap-3">
@@ -364,7 +378,6 @@ function BookInner() {
                       </div>
                     </div>
                   ) : (
-                    /* Dropdown populated entirely from API */
                     <Select
                       value={selectedServiceId ? String(selectedServiceId) : ""}
                       onValueChange={(val) => {
@@ -450,7 +463,7 @@ function BookInner() {
                 </Card>
               </motion.div>
 
-              {/* Step 4 — Patient Info */}
+              {/* Step 4 — Your Information */}
               <motion.div {...fade} transition={{ delay: 0.3 }}>
                 <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
                   <h3 className="text-white font-medium mb-4 flex items-center gap-2">
@@ -489,10 +502,27 @@ function BookInner() {
                       </Label>
                       <Input
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
-                        placeholder="+63 912 345 6789"
+                        onChange={(e) => {
+                          const val = e.target.value
+                            .replace(/\D/g, "")
+                            .slice(0, 11);
+                          setPhone(val);
+                          validatePhone(val);
+                        }}
+                        className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 ${
+                          phoneError
+                            ? "border-red-400/50 focus-visible:ring-red-400/30"
+                            : ""
+                        }`}
+                        placeholder="09XXXXXXXXX"
+                        maxLength={11}
+                        inputMode="numeric"
                       />
+                      {phoneError && (
+                        <p className="text-red-400 text-xs mt-1.5">
+                          {phoneError}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </Card>
@@ -538,12 +568,6 @@ function BookInner() {
                         </span>
                       </div>
                       <div className="border-t border-white/10 pt-4 flex justify-between">
-                        <span className="text-slate-500">Duration</span>
-                        <span className="text-white">
-                          {activeService?.duration ?? "—"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
                         <span className="text-slate-500">Starting at</span>
                         <Badge
                           variant="outline"
@@ -587,6 +611,7 @@ function BookInner() {
                         !name ||
                         !email ||
                         !phone ||
+                        phoneError !== "" ||
                         loading ||
                         servicesLoading
                       }
@@ -629,7 +654,6 @@ function BookInner() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
