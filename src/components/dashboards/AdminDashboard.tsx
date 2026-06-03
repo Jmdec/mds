@@ -133,16 +133,16 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button className="flex-1 sm:flex-none h-11 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-semibold shadow-lg shadow-blue-100 hover:opacity-90 transition-all flex items-center justify-center gap-2">
+            {/* <button className="flex-1 sm:flex-none h-11 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-semibold shadow-lg shadow-blue-100 hover:opacity-90 transition-all flex items-center justify-center gap-2">
               <Plus size={16} />
               Book Appointment
-            </button>
+            </button> */}
 
-            <button className="relative h-11 w-11 rounded-2xl border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-all shrink-0">
+            {/* <button className="relative h-11 w-11 rounded-2xl border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-all shrink-0">
               <Bell size={18} className="text-slate-500" />
 
               <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-600" />
-            </button>
+            </button> */}
           </div>
         </div>
 
