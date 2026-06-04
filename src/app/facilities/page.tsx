@@ -1,4 +1,3 @@
-// app/facilities/page.tsx
 "use client";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,13 +17,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 
 const fade = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.5 },
+  transition: { duration: 0.45 },
 };
 
-// Icon mapping from names to components
 const iconMap: { [key: string]: React.ElementType } = {
   Wind,
   Zap,
@@ -56,14 +54,12 @@ type FacilityData = {
   accent: "cyan" | "blue";
 };
 
-// Helper function to construct image URLs with NEXT_PUBLIC_IMAGE_URL
 function getImageUrl(imagePath: string | null): string | null {
   if (!imagePath) return null;
   const baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL || "";
   return imagePath.startsWith("http") ? imagePath : `${baseUrl}${imagePath}`;
 }
 
-// ── Image Modal ──────────────────────────────────────────────────────────────
 type ModalState = { src: string; alt: string } | null;
 
 function ImageModal({
@@ -73,7 +69,6 @@ function ImageModal({
   modal: ModalState;
   onClose: () => void;
 }) {
-  // Close on Escape key
   useEffect(() => {
     if (!modal) return;
     const handler = (e: KeyboardEvent) => {
@@ -83,13 +78,8 @@ function ImageModal({
     return () => window.removeEventListener("keydown", handler);
   }, [modal, onClose]);
 
-  // Lock body scroll while open
   useEffect(() => {
-    if (modal) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = modal ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -99,22 +89,21 @@ function ImageModal({
     <AnimatePresence>
       {modal && (
         <motion.div
-          key="modal-backdrop"
+          key="backdrop"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10"
+          style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
           onClick={onClose}
         >
           <motion.div
-            key="modal-content"
-            initial={{ scale: 0.9, opacity: 0 }}
+            key="content"
+            initial={{ scale: 0.93, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="relative max-w-2xl w-full aspect-video bg-white rounded-xl overflow-hidden"
+            exit={{ scale: 0.93, opacity: 0 }}
+            className="relative max-w-3xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl"
+            style={{ aspectRatio: "16/9" }}
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -126,9 +115,9 @@ function ImageModal({
             />
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 rounded-lg transition-colors z-10"
+              className="absolute top-3 right-3 p-1.5 bg-black/60 hover:bg-black/80 rounded-lg transition-colors z-10"
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="w-4 h-4 text-white" />
             </button>
           </motion.div>
         </motion.div>
@@ -137,7 +126,6 @@ function ImageModal({
   );
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
 export default function Facilities() {
   const [modal, setModal] = useState<ModalState>(null);
   const [facilities, setFacilities] = useState<Facility[]>([]);
@@ -147,45 +135,31 @@ export default function Facilities() {
   useEffect(() => {
     const fetchFacilities = async () => {
       try {
-        setLoading(true);
         const response = await fetch("/api/facilities");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch facilities");
-        }
-
+        if (!response.ok) throw new Error("Failed to fetch facilities");
         const data: FacilityData[] = await response.json();
-
-        // Map icon names to actual components
-        const mappedFacilities = data.map((f) => ({
-          ...f,
-          icon: iconMap[f.icon_name] || Wind,
-        }));
-
-        setFacilities(mappedFacilities);
+        setFacilities(
+          data.map((f) => ({ ...f, icon: iconMap[f.icon_name] || Wind })),
+        );
       } catch (err) {
-        console.error("[v0] Error fetching facilities:", err);
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
     };
-
     fetchFacilities();
   }, []);
 
-  const openModal = useCallback((src: string, alt: string) => {
-    setModal({ src, alt });
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setModal(null);
-  }, []);
+  const openModal = useCallback(
+    (src: string, alt: string) => setModal({ src, alt }),
+    [],
+  );
+  const closeModal = useCallback(() => setModal(null), []);
 
   if (loading) {
     return (
       <div className="bg-[#020617] min-h-screen flex items-center justify-center">
-        <div className="text-slate-400">Loading facilities...</div>
+        <div className="text-slate-400 text-sm">Loading facilities…</div>
       </div>
     );
   }
@@ -193,23 +167,23 @@ export default function Facilities() {
   if (error) {
     return (
       <div className="bg-[#020617] min-h-screen flex items-center justify-center">
-        <div className="text-red-400">Error: {error}</div>
+        <div className="text-red-400 text-sm">Error: {error}</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#020617] text-white overflow-hidden">
+    <div className="bg-[#020617] text-white">
       <ImageModal modal={modal} onClose={closeModal} />
 
       {/* ── Header ── */}
-      <header className="relative border-b border-white/5 px-6 py-8 md:py-12">
-        <div className="max-w-7xl mx-auto">
+      <header className="border-b border-white/5 px-6 py-8">
+        <div className="max-w-6xl mx-auto">
           <motion.div {...fade}>
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
               Our Facilities
             </h1>
-            <p className="text-lg text-slate-400 max-w-2xl">
+            <p className="text-sm text-slate-400 max-w-lg">
               Equipped with state-of-the-art technology and comprehensive safety
               protocols
             </p>
@@ -217,146 +191,146 @@ export default function Facilities() {
         </div>
       </header>
 
-      {/* ── Tabs ── */}
-      <motion.section {...fade} className="border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-1 overflow-x-auto">
-            {facilities.map((f) => (
-              <Link
-                key={f.id}
-                href={`#${f.id}`}
-                className="px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 border-transparent hover:border-white/20 transition-colors"
-              >
-                {f.label}
-              </Link>
-            ))}
+      {/* ── Tab Bar ── */}
+      <div className="border-b border-white/5 sticky top-0 z-30 bg-[#020617]/95 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex overflow-x-auto">
+            {facilities.map((f) => {
+              const Icon = f.icon;
+              return (
+                <Link
+                  key={f.id}
+                  href={`#${f.id}`}
+                  className="flex items-center gap-1.5 px-4 py-3 whitespace-nowrap text-xs font-medium text-slate-500 hover:text-slate-200 border-b-2 border-transparent hover:border-white/20 transition-all"
+                >
+                  <Icon className="w-3 h-3" />
+                  {f.label}
+                </Link>
+              );
+            })}
           </div>
         </div>
-      </motion.section>
+      </div>
 
-      {/* ── Facility Sections ── */}
-      <div className="max-w-7xl mx-auto px-6 py-20 space-y-0">
+      {/* ── Facility Rows ── */}
+      <div className="max-w-6xl mx-auto px-6 py-8 space-y-4">
         {facilities.map((f, i) => {
           const Icon = f.icon;
           const isEven = i % 2 === 0;
+          const isCyan = f.accent === "cyan";
+          const imgSrc = getImageUrl(f.image_url);
 
           return (
             <motion.section
               key={f.id}
               id={f.id}
               {...fade}
-              className={`grid lg:grid-cols-2 gap-16 items-center py-20 ${
-                i < facilities.length - 1 ? "border-b border-white/5" : ""
-              }`}
+              className="flex flex-col lg:flex-row gap-0 rounded-2xl overflow-hidden border border-white/8 bg-white/[0.02]"
             >
-              {/* Image Column */}
-              <div className={isEven ? "lg:order-1" : "lg:order-2"}>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group"
-                >
-                  {f.image_url ? (
-                    <>
-                      <Image
-                        src={getImageUrl(f.image_url) || ""}
-                        alt={f.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <button
-                        onClick={() =>
-                          openModal(getImageUrl(f.image_url) || "", f.name)
-                        }
-                        className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100"
-                      >
-                        <ZoomIn className="w-8 h-8 text-white" />
-                      </button>
-                    </>
-                  ) : (
-                    <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                      <span className="text-slate-600">No image</span>
-                    </div>
-                  )}
-                </motion.div>
+              {/* Image — fixed height, fixed width on desktop */}
+              <div
+                className={`relative shrink-0 w-full lg:w-72 xl:w-80 h-48 lg:h-auto ${
+                  isEven ? "lg:order-1" : "lg:order-2"
+                }`}
+              >
+                {imgSrc ? (
+                  <>
+                    <Image
+                      src={imgSrc}
+                      alt={f.name}
+                      fill
+                      className="object-cover"
+                    />
+                    {/* subtle tint */}
+                    <div
+                      className={`absolute inset-0 ${
+                        isCyan
+                          ? "bg-gradient-to-br from-cyan-900/40 to-transparent"
+                          : "bg-gradient-to-br from-blue-900/40 to-transparent"
+                      }`}
+                    />
+                    <button
+                      onClick={() => openModal(imgSrc, f.name)}
+                      className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-black/30 transition-opacity"
+                    >
+                      <ZoomIn className="w-6 h-6 text-white drop-shadow" />
+                    </button>
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                    <span className="text-slate-600 text-xs">No image</span>
+                  </div>
+                )}
               </div>
 
-              {/* Content Column */}
-              <div className={isEven ? "lg:order-2" : "lg:order-1"}>
-                {/* Label */}
-                <div className="flex items-center gap-3 mb-6">
+              {/* Content */}
+              <div
+                className={`flex flex-col justify-center px-6 py-6 gap-3 flex-1 ${
+                  isEven ? "lg:order-2" : "lg:order-1"
+                }`}
+              >
+                {/* Icon + label */}
+                <div className="flex items-center gap-2">
                   <div
-                    className={`p-3 rounded-lg ${
-                      f.accent === "cyan" ? "bg-cyan-500/20" : "bg-blue-500/20"
+                    className={`p-1.5 rounded-md ${
+                      isCyan ? "bg-cyan-500/15" : "bg-blue-500/15"
                     }`}
                   >
                     <Icon
-                      className={`w-5 h-5 ${
-                        f.accent === "cyan" ? "text-cyan-400" : "text-blue-400"
+                      className={`w-3.5 h-3.5 ${
+                        isCyan ? "text-cyan-400" : "text-blue-400"
                       }`}
                     />
                   </div>
                   <span
-                    className={`text-xs font-semibold uppercase tracking-widest ${
-                      f.accent === "cyan" ? "text-cyan-400" : "text-blue-400"
+                    className={`text-[10px] font-bold uppercase tracking-widest ${
+                      isCyan ? "text-cyan-400" : "text-blue-400"
                     }`}
                   >
                     {f.label}
                   </span>
                 </div>
 
-                {/* Title */}
-                <h2 className="text-4xl font-bold mb-4 leading-tight">
-                  {f.name}
-                </h2>
+                {/* Title + description */}
+                <div>
+                  <h2 className="text-lg font-bold leading-tight mb-1">
+                    {f.name}
+                  </h2>
+                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                    {f.description}
+                  </p>
+                </div>
 
-                {/* Description */}
-                <p className="text-base text-slate-400 mb-8 leading-relaxed">
-                  {f.description}
-                </p>
-
-                {/* Bullets */}
-                <ul className="space-y-3 mb-12">
+                {/* Bullets — always 2 columns */}
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
                   {f.bullets.map((bullet, j) => (
-                    <li key={j} className="flex gap-3 items-start">
+                    <li key={j} className="flex gap-2 items-start">
                       <span
-                        className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5 ${
-                          f.accent === "cyan"
-                            ? "bg-cyan-500/30 text-cyan-400"
-                            : "bg-blue-500/30 text-blue-400"
+                        className={`shrink-0 mt-0.5 w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-bold ${
+                          isCyan
+                            ? "bg-cyan-500/20 text-cyan-400"
+                            : "bg-blue-500/20 text-blue-400"
                         }`}
                       >
                         ✓
                       </span>
-                      <span className="text-slate-300">{bullet}</span>
+                      <span className="text-xs text-slate-300 leading-snug">
+                        {bullet}
+                      </span>
                     </li>
                   ))}
                 </ul>
-
-                {/* CTA */}
-                {/* <Link href="/book">
-                  <Button className="group">
-                    Book a Consultation
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link> */}
               </div>
             </motion.section>
           );
         })}
       </div>
 
-      {/* ── CTA Section ── */}
-      <motion.section
-        {...fade}
-        className="border-t border-white/5 bg-gradient-to-b from-white/5 to-transparent"
-      >
-        <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Experience Excellence
-          </h2>
-          <p className="text-slate-400 mb-8 text-lg">
+      {/* ── CTA ── */}
+      <motion.section {...fade} className="border-t border-white/5">
+        <div className="max-w-xl mx-auto px-6 py-14 text-center">
+          <h2 className="text-2xl font-bold mb-2">Experience Excellence</h2>
+          <p className="text-slate-400 mb-6 text-sm">
             Our commitment to safety, innovation, and patient care is evident in
             every aspect of our clinic
           </p>
